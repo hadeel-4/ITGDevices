@@ -1,0 +1,162 @@
+﻿@model ITGDevices.Models.ItemOperation
+<style>
+    .f {
+        margin-top: 120px;
+    }
+</style>
+
+@{ ViewData["Title"] = "Edit";
+    Layout = "_Layoutadmin"; }
+
+
+@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor HttpContextAccessor
+@if (HttpContextAccessor.HttpContext.Session.GetString("role2") == "out")
+{
+<h1>Hi, @HttpContextAccessor.HttpContext.Session.GetString("firstname")</h1> }
+else
+{
+
+<form class="f" method="post" asp-action="Edit" asp-controller="Devices">
+    <input type="hidden" asp-for="item.ID" />
+    <input type="hidden" asp-for="item.SerialNumber" />
+    <input type="hidden" asp-for="CategoryItem.ID" />
+    <input type="hidden" asp-for="CategoryItem.ItemID" />
+    <div class="border p-3">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-group row">
+            <h2 class="text-info pl-3">Edit Item</h2>
+        </div>
+
+        <div class="row">
+
+            <div class="col-8">
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="item.Name"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="item.Name" class="form-control" />
+                        <span asp-validation-for="item.Name" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="item.Description"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="item.Description" class="form-control" />
+                        <span asp-validation-for="item.Description" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="item.Manufacturer"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="item.Manufacturer" class="form-control" />
+                        <span asp-validation-for="item.Manufacturer" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="item.Model"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="item.Model" class="form-control" />
+                        <span asp-validation-for="item.Model" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="item.PurchaseDate"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="item.PurchaseDate" class="form-control" />
+                        <span asp-validation-for="item.PurchaseDate" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="CategoryID">Category</label>
+
+                    </div>
+                    <div class="col-8">
+                        <select required asp-for="CategoryItem.CategoryID" class="form-control">
+                            @foreach (Category c in Model.categories ?? new List<Category>())
+                            {
+            <option value=@c.ID > @c.Name</option>
+}
+                        </select>
+
+
+
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-8 offset-4 row">
+
+                        <div class="col">
+                            <input type="submit" class="btn btn-info w-100" value="Edit" />
+                        </div>
+                        <div class="col">
+
+                            <a asp-action="Index" asp-controller="Devices" class="btn btn-success w-100">
+                                <i class="fas fa-sign-out-alt"></i> Back
+                            </a>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-4">
+                    @*Keep this empty*@
+                </div>
+
+
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                @section Scripts{
+                    @{ //client side validation
+    <partial name="_ValidationScriptsPartial" /> }
+
+
+
+                }}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

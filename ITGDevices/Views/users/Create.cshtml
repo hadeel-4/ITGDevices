@@ -1,0 +1,185 @@
+﻿@model ITGDevices.Models.UsersRoles
+<style>
+    .f {
+        margin-top: 120px;
+    }
+</style>
+
+@{ ViewData["Title"] = "Create";
+    Layout = "_Layoutadmin"; }
+
+
+@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor HttpContextAccessor
+@if (HttpContextAccessor.HttpContext.Session.GetString("role2") == "out")
+{
+<h1>Hi, @HttpContextAccessor.HttpContext.Session.GetString("firstname")</h1> }
+else
+{
+
+<form class="f" method="post" asp-action="Create">
+    <div class="border p-3">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-group row">
+            <h2 class="text-info pl-3">Add User</h2>
+        </div>
+
+        <div class="row">
+
+            <div class="col-8">
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="user.username"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="user.username" class="form-control" />
+                        <span asp-validation-for="user.username" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="user.Email"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="user.Email" class="form-control" />
+                        <span asp-validation-for="user.Email" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="user.FirstName"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="user.FirstName" class="form-control" />
+                        <span asp-validation-for="user.FirstName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="user.LastName"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="user.LastName" class="form-control" />
+                        <span asp-validation-for="user.LastName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="user.Password"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="user.Password" class="form-control" />
+                        <span asp-validation-for="user.Password" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="user.CoPassword"></label>
+
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="user.CoPassword" class="form-control" />
+                        <span asp-validation-for="user.CoPassword" class="text-danger"></span>
+
+
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="roleId">User Role</label>
+
+                    </div>
+                    <div class="col-8">
+                        <select required asp-for="roleId" class="form-control">
+                            @foreach (Role r in Model.roles)
+                            {
+
+                                if (string.Compare(r.rolename, "Admin", true) == 0) continue;
+                                if (r.rolename == "Employee")
+
+                                {
+                <option value=@r.ID selected="true"> @r.rolename</option> }
+                                    else if (r.rolename == "OperationsManager")
+                                    {
+                <option value=@r.ID> @r.rolename</option>}
+
+                                }
+                        </select>
+
+                    </div>
+                </div>
+
+
+               
+
+
+
+                <div class="form-group row">
+                    <div class="col-8 offset-4 row">
+
+                        <div class="col">
+                            <input type="submit" class="btn btn-info w-100" value="Create" />
+                        </div>
+                        <div class="col">
+
+                            <a asp-action="Index" class="btn btn-success w-100">
+                                <i class="fas fa-sign-out-alt"></i> Back
+                            </a>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-4">
+                    @*Keep this empty*@
+                </div>
+
+
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</form>
+
+
+               
+                                                               
+
+                                                                               
+
+
+
+
+
+
+
+                                                                                                @section Scripts{
+                                                                                                    @{ //client side validation
+                                                                                    <partial name="_ValidationScriptsPartial" /> }
+
+
+
+                                                                                                }
+                                                                                                        
+                                                                                                        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

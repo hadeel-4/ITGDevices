@@ -1,0 +1,88 @@
+﻿@model IEnumerable<ITGDevices.Models.Category>
+@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{ ViewData["Title"] = "Index";
+    Layout = "_Layoutadmin"; }
+
+
+<style>
+    .f {
+        margin-top: 90px;
+    }
+</style>
+<div class="container p-3 f">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-primary">Categories List</h2>
+
+        </div>
+        <div class="col-6 text-right">
+            <a asp-action="Create" asp-controller="Category" class="btn btn-primary">
+                <i class="fas fa-plus"></i> &nbsp; Create New Category
+            </a>
+        </div>
+    </div>
+
+    <br /><br />
+
+
+
+
+    @if (HttpContextAccessor.HttpContext.Session.GetString("role2") == "out")
+    {
+<h1>Hi, @HttpContextAccessor.HttpContext.Session.GetString("firstname")</h1> }
+else
+{
+@if (Model.Count() > 0)
+{
+<table class="table table-bordered table-striped" style="width:100%">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+<tr>
+    <td width="20%">
+        @Html.DisplayFor(modelItem => item.Name)
+    </td>
+    <td width="50%">
+        @Html.DisplayFor(modelItem => item.Description)
+    </td>
+    
+    <td class="text-center">
+        <div class="w-75 btn-group" role="group">
+            <a asp-route-Id="@item.ID" asp-action="Edit" asp-controller="Category" class="btn btn-primary mx-2">
+                <i class="fas fa-edit"></i>
+            </a>
+            <a asp-route-Id="@item.ID" asp-action="Details" asp-controller="Category" class="btn btn-primary mx-2">
+                <i class="fal fa-question"></i>
+            </a>
+            <a asp-route-Id="@item.ID" asp-action="Delete" asp-controller="Category" class="btn btn-danger mx-2">
+                <i class="far fa-trash-alt"></i>
+            </a>
+
+        </div>
+
+    </td>
+</tr>}
+
+
+    </tbody>
+</table> }
+else
+{
+<p>No Category exists.</p>}}
+
+</div>
+

@@ -1,0 +1,135 @@
+﻿@model ITGDevices.Models.ItemOperation
+<style>
+    .f {
+        margin-top: 120px;
+    }
+</style>
+@{ ViewData["Title"] = "Details";
+    Layout = "_Layoutadmin"; }
+@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor HttpContextAccessor
+@if (HttpContextAccessor.HttpContext.Session.GetString("role2") == "out")
+{
+<h1>Hi, @HttpContextAccessor.HttpContext.Session.GetString("firstname")</h1> }
+else
+{
+
+<form class="f">
+
+    <div class="border p-3">
+
+
+        <div class="form-group row">
+            <h2 class="text-info pl-3">Item Details</h2>
+        </div>
+
+        <div class="row">
+
+            <div class="col-8">
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label> @Html.DisplayNameFor(model => model.item.SerialNumber)</label>
+                    </div>
+                    <div class="col-8">
+                        @Html.DisplayFor(model => model.item.SerialNumber)
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label> @Html.DisplayNameFor(model => model.item.Name)</label>
+                    </div>
+                    <div class="col-8">
+                        @Html.DisplayFor(model => model.item.Name)
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label>@Html.DisplayNameFor(model => model.item.Description)</label>
+                    </div>
+                    <div class="col-8">
+                        @Html.DisplayFor(model => model.item.Description)
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label> @Html.DisplayNameFor(model => model.item.Manufacturer)</label>
+                    </div>
+                    <div class="col-8">
+                        @Html.DisplayFor(model => model.item.Manufacturer)
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label> @Html.DisplayNameFor(model => model.item.Model)</label>
+                    </div>
+                    <div class="col-8">
+                        @Html.DisplayFor(model => model.item.Model)
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label>  @Html.DisplayNameFor(model => model.item.PurchaseDate)</label>
+                    </div>
+                    <div class="col-8">
+                        @Html.DisplayFor(model => model.item.PurchaseDate)
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label>Category</label>
+                    </div>
+                    <div class="col-8">
+                        @Html.DisplayFor(model => model.category.Name)
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label>Holder</label>
+                    </div>
+                    <div class="col-8">
+                        @Html.DisplayFor(model => model.holder.username)
+                    </div>
+                </div>
+
+
+                <div class="form-group row">
+                    <div class="col-8 offset-4 row">
+
+
+                        <div class="col">
+
+                            <a asp-action="Index" asp-controller="Devices" class="btn btn-success w-100">
+                                <i class="fas fa-sign-out-alt"></i>   Back
+                            </a>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-4">
+                    @*Keep this empty*@
+                </div>
+
+
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</form>
+
+                @section Scripts{
+                    @{ //client side validation
+    <partial name="_ValidationScriptsPartial" /> }
+                }}
+
+
+
+
+
+
