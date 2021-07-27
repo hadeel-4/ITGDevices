@@ -11,7 +11,7 @@ namespace ITGDevices.Models
     {
          [Key]
         public int ID { get; set; }
-
+        [Required(ErrorMessage = "This field is required")]
         public int SerialNumber { get; set; }
         [Required(ErrorMessage = "This field is required")]
 
@@ -28,6 +28,10 @@ namespace ITGDevices.Models
         public String Model { get; set; }
         [Required(ErrorMessage = "This field is required")]
         public bool IsActive { get; set; }
+
+        [Required(ErrorMessage = "This field is required")]
+        public bool IsDeliver { get; set; }
+
         [DataType(dataType:DataType.Date)]
         public DateTime PurchaseDate { get; set; }
 

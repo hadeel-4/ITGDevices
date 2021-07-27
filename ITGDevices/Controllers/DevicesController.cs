@@ -79,6 +79,7 @@ namespace ITGDevices.Controllers
                     if (ModelState.IsValid)
                     {
                         itemOperation.item.IsActive = false;
+                        itemOperation.item.IsDeliver = false;
                         _context.Items.Add(itemOperation.item);
 
                         await _context.SaveChangesAsync();
@@ -164,7 +165,7 @@ namespace ITGDevices.Controllers
 
         public async Task<IActionResult> Details(int? id)
         {
-            if (string.Compare(HttpContext.Session.GetString("role"), "Admin", true) == 0)
+            if ((string.Compare(HttpContext.Session.GetString("role"), "Admin", true) == 0))
             {
                 if (id == null)
                 {

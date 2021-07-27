@@ -23,7 +23,7 @@ namespace WebApplication1.Controllers
         public IActionResult Employee()
         {
             if (string.Compare(HttpContext.Session.GetString("role"), "Employee", true) == 0)
-                return RedirectToAction("Student", "users");
+                return RedirectToAction("Index", "DevicesRequest");
             else return RedirectToAction("Login", "users");
         }
         public IActionResult OperationsManager()

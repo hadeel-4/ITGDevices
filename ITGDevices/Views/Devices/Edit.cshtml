@@ -19,6 +19,8 @@ else
 
 <form class="f" method="post" asp-action="Edit" asp-controller="Devices">
     <input type="hidden" asp-for="item.ID" />
+    <input type="hidden" asp-for="item.IsDeliver" />
+    <input type="hidden" asp-for="item.IsActive" />
     <input type="hidden" asp-for="item.SerialNumber" />
     <input type="hidden" asp-for="CategoryItem.ID" />
     <input type="hidden" asp-for="CategoryItem.ItemID" />
@@ -86,7 +88,7 @@ else
                         <select required asp-for="CategoryItem.CategoryID" class="form-control">
                             @foreach (Category c in Model.categories ?? new List<Category>())
                             {
-            <option value=@c.ID > @c.Name</option>
+            <option value=@c.ID> @c.Name</option>
 }
                         </select>
 
