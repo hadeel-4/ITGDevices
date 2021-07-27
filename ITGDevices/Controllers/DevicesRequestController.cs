@@ -63,5 +63,42 @@ namespace ITGDevices.Controllers
             }
             else return RedirectToAction("Login", "users");
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RequestDevice(ItemOperation obj)
+        {
+            if ((string.Compare(HttpContext.Session.GetString("role"), "Employee", true) == 0))
+            {
+
+
+                var item = obj.item;
+                if (item == null)
+                {
+                    return NotFound();
+                }
+                if (!item.IsActive)
+                {
+
+                }
+                else
+                {
+
+                }
+                 UserItem h = _context.UserItem.Single(i => i.ItemID == item.ID);
+                User holder = _context.users.Single(i => i.ID == h.UserID);
+                ItemOperation itemOperation = new ItemOperation();
+                itemOperation.item = item;
+                itemOperation.holder = holder;
+
+
+
+
+                return View(itemOperation);
+
+                // return View(user);
+            }
+            else return RedirectToAction("Login", "users");
+        }
     }
 }

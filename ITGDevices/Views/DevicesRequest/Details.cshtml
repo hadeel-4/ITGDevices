@@ -14,7 +14,9 @@
 else
 {
 
-<form class="f">
+<form class="f" method="post" asp-action="RequestDevice" asp-controller="DevicesRequest">
+    <input type="hidden" asp-for="item" />
+    <input type="hidden" asp-for="holder" />
     <input type="hidden" asp-for="holder.ID" />
 
     <div class="border p-3">
@@ -90,6 +92,7 @@ else
                     </div>
                     <div class="col-8">
                         @Html.DisplayFor(model => model.holder.username)
+
                     </div>
                 </div>
 
@@ -97,7 +100,9 @@ else
                 <div class="form-group row">
                     <div class="col-8 offset-4 row">
 
-
+                        <div class="col">
+                            <input type="submit" class="btn btn-info w-100" value="Request Device" />
+                        </div>
                         <div class="col">
 
                             <a asp-action="Index" asp-controller="DevicesRequest" class="btn btn-success w-100">
