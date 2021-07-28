@@ -116,6 +116,8 @@ namespace ITGDevices.Controllers
                     smtp.Send(mail);
                     HttpContext.Session.SetInt32("itemId", item.ID);
                     HttpContext.Session.SetInt32("userId", (int)HttpContext.Session.GetInt32("id"));
+                    HttpContext.Session.SetInt32("holderId", holder.ID);
+
                     System.Diagnostics.Debug.WriteLine("done");
                 }
                 catch (SmtpException ex)
@@ -179,6 +181,7 @@ namespace ITGDevices.Controllers
 
         public async Task<IActionResult> AcceptOrReject()
         {
+            
             if ((string.Compare(HttpContext.Session.GetString("role"), "Employee", true) == 0) || (string.Compare(HttpContext.Session.GetString("role"), "OperationsManager", true) == 0))
             {
               int ? itemID= (int)HttpContext.Session.GetInt32("itemId");
@@ -197,18 +200,24 @@ namespace ITGDevices.Controllers
                 {
                     return NotFound();
                 }
-                User user = _context.users.Single(i => i.ID == userID);
+                if ((int)HttpContext.Session.GetInt32("id")== (int)HttpContext.Session.GetInt32("holderId"))
+                {
+                    User user = _context.users.Single(i => i.ID == userID);
 
-                ItemOperation itemOperation = new ItemOperation();
-                itemOperation.ItemID = (int)itemID;
-                itemOperation.item = item;
-                itemOperation.UserId = (int)userID;
-                itemOperation.requester = user;
+                    ItemOperation itemOperation = new ItemOperation();
+                    itemOperation.ItemID = (int)itemID;
+                    itemOperation.item = item;
+                    itemOperation.UserId = (int)userID;
+                    itemOperation.requester = user;
+                    return View(itemOperation);
+                }
 
 
 
 
-                return View(itemOperation);
+
+
+                else return RedirectToAction("Login", "DevicesRequest");
             }
             else return RedirectToAction("Login", "DevicesRequest");
 
