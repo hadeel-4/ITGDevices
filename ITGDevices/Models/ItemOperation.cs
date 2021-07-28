@@ -17,6 +17,8 @@ namespace ITGDevices.Models
         public User holder { get; set; }
         public int ManagerID { get; set; }//
         public int CId { get; set; }//
+        public int UserId { get; set; }//
+        public User requester { get; set; }//
 
 
         public List<Item> Items { get; set; }

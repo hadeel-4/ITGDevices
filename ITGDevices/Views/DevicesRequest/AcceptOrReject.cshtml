@@ -1,0 +1,91 @@
+﻿@model ITGDevices.Models.ItemOperation
+<style>
+    .f {
+        margin-top: 120px;
+    }
+</style>
+
+@{ ViewData["Title"] = "Accept/Reject";
+    Layout = "_LayoutAccept"; }
+
+
+@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor HttpContextAccessor
+@if (HttpContextAccessor.HttpContext.Session.GetString("role2") == "out")
+{
+ }
+else
+{
+
+<form class="f" method="post" >
+    <div class="border p-3">
+
+        <div class="form-group row">
+            <h2 class="text-info pl-3"> @Html.DisplayFor(model => model.requester.username) want to use @Html.DisplayFor(model => model.item.Name)</h2>
+        </div>
+
+        <div class="row">
+
+            <div class="col-8">
+                <div class="form-group row">
+                    <div class="col-8 offset-4 row">
+
+                        <div class="col">
+                            <input type="submit" class="btn btn-info w-100" value="Approve" />
+                        </div>
+                        <div class="col">
+                            <input type="submit" class="btn btn-info w-100" value="Reject" />
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-4">
+                    @*Keep this empty*@
+                </div>
+
+
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                @section Scripts{
+                    @{ //client side validation
+    <partial name="_ValidationScriptsPartial" /> }
+
+
+
+                }}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
