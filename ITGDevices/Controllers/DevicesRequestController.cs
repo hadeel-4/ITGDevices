@@ -69,32 +69,22 @@ namespace ITGDevices.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public  IActionResult RequestDevice(ItemOperation obj)
+        public async Task<IActionResult> RequestDevice(ItemOperation obj)
         {
             if ((string.Compare(HttpContext.Session.GetString("role"), "Employee", true) == 0))
             {
+                var item = await _context.Items
+                   .FirstOrDefaultAsync(m => m.ID == obj.item.ID);//
+                if (item == null)
+                {
+                    return NotFound();
+                }
 
 
-                /* var item = obj.item;
-
-
-                         var listOfusersId = _context.userRoles.Where(r => r.roleID == 2).ToList();
-                         List<User> managers = new List<User>();
-                         foreach (UserRole r in listOfusersId)
-                         {
-                             var u = _context.users.Single(e => e.ID == r.userID);
-                             managers.Add(u);
-
-                         }
-                         User manager = managers[0];
-                         int uid = (int)HttpContext.Session.GetInt32("id");
-                         User caurrentUser = _context.users.Single(e => e.ID == uid);
-   */
-               // UserItem h = _context.UserItem.Single(i => i.ItemID == item.ID);
-                // User holder = _context.users.Single(i => i.ID == h.UserID);
-                // ItemOperation itemOperation = new ItemOperation();
-                //itemOperation.item = item;
-                // itemOperation.holder = holder;
+                
+                UserItem h = _context.UserItem.Single(i => i.ItemID == item.ID);
+                 User holder = _context.users.Single(i => i.ID == h.UserID);
+                
 
                 MailMessage mail = new MailMessage();
                 mail.From = new System.Net.Mail.MailAddress("ha412233@gmail.com");
@@ -108,7 +98,7 @@ namespace ITGDevices.Controllers
                 smtp.Host = "smtp.gmail.com";
 
                 //recipient
-                mail.To.Add(new MailAddress("ha986562@gmail.com"));
+                mail.To.Add(new MailAddress(holder.Email));
 
                 mail.IsBodyHtml = true;
                 smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
