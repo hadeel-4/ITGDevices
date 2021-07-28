@@ -19,6 +19,10 @@ else
 
 <form class="f" method="post" asp-action="Edit">
     <input type="hidden" asp-for="ID" />
+    <input type="hidden" asp-for="Password" />
+    <input type="hidden" asp-for="CoPassword" />
+
+
     <div class="border p-3">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -65,25 +69,7 @@ else
                         <span asp-validation-for="LastName" class="text-danger"></span>
                     </div>
                 </div>
-                <div class="form-group row">
-                    <div class="col-4">
-                        <label asp-for="Password"></label>
-                    </div>
-                    <div class="col-8">
-                        <input asp-for="Password" class="form-control" />
-                        <span asp-validation-for="Password" class="text-danger"></span>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-4">
-                        <label asp-for="CoPassword"></label>
-
-                    </div>
-                    <div class="col-8">
-                       <input asp-for="CoPassword" class="form-control" />
-                        <span asp-validation-for="CoPassword" class="text-danger"></span>
-                    </div>
-                </div>
+                
 
                 <div class="form-group row">
                     <div class="col-8 offset-4 row">

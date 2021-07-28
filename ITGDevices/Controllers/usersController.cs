@@ -132,6 +132,78 @@ namespace ITGDevices.Controllers
 
 
 
+
+        public async Task<IActionResult> Password()
+        {
+            if ((string.Compare(HttpContext.Session.GetString("role"), "Employee", true) == 0)|| (string.Compare(HttpContext.Session.GetString("role"), "OperationsManager", true) == 0))
+            {
+                int UserId = (int)HttpContext.Session.GetInt32("id");
+                User user = await _context.users.FindAsync(UserId);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                return View(user);
+                
+
+                   
+            }
+            else return RedirectToAction("Login", "users");
+
+        }
+
+        // POST: users/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Password(User user)
+        {
+            if ((string.Compare(HttpContext.Session.GetString("role"), "Employee", true) == 0)|| (string.Compare(HttpContext.Session.GetString("role"), "OperationsManager", true) == 0))
+            {
+                if (ModelState.IsValid)
+                {
+                    try
+                    {
+                        _context.Update(user);
+                        await _context.SaveChangesAsync();
+                        System.Diagnostics.Debug.WriteLine("done");
+
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        System.Diagnostics.Debug.WriteLine("catch");
+
+                        if (!UserExists(user.ID))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    // return RedirectToAction(nameof(Index), "DevicesRequest");
+                    return backTo();
+                }
+                return View(user);
+            }
+            else return RedirectToAction("Login", "users");
+        }
+        public  IActionResult backTo()
+        {
+            if((string.Compare(HttpContext.Session.GetString("role"), "Employee", true) == 0))
+                 return RedirectToAction(nameof(Index), "DevicesRequest");
+            else if((string.Compare(HttpContext.Session.GetString("role"), "OperationsManager", true) == 0))
+                return RedirectToAction(nameof(Index), "OperationsManager");
+
+            return RedirectToAction("Login", "users");
+        }
+
+
+
+
         // GET: users/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
