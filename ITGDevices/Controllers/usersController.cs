@@ -50,6 +50,8 @@ namespace ITGDevices.Controllers
                         HttpContext.Session.SetString("username", user.username);
                         HttpContext.Session.SetString("firstname", User1.FirstName);
                         HttpContext.Session.SetInt32("id", User1.ID);
+                        HttpContext.Session.SetInt32("idd", User1.ID);
+
 
                         return RedirectToAction(HttpContext.Session.GetString("role"), "Home");
                         //return View("Index");

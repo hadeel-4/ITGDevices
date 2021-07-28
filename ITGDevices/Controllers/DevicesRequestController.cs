@@ -162,7 +162,9 @@ namespace ITGDevices.Controllers
                         var RoleInfo = _context.roles.Single(e => e.ID == role.roleID);
                         HttpContext.Session.SetString("role", RoleInfo.rolename);
                         HttpContext.Session.SetString("role2", "in");
-                       
+                        HttpContext.Session.SetInt32("idd", User1.ID);
+
+
                         return RedirectToAction("AcceptOrReject", "DevicesRequest");
                         //return View("Index");
 
@@ -200,7 +202,7 @@ namespace ITGDevices.Controllers
                 {
                     return NotFound();
                 }
-                if ((int)HttpContext.Session.GetInt32("id")== (int)HttpContext.Session.GetInt32("holderId"))
+                if ((int)HttpContext.Session.GetInt32("idd")== (int)HttpContext.Session.GetInt32("holderId"))
                 {
                     User user = _context.users.Single(i => i.ID == userID);
 
@@ -211,13 +213,7 @@ namespace ITGDevices.Controllers
                     itemOperation.requester = user;
                     return View(itemOperation);
                 }
-
-
-
-
-
-
-                else return RedirectToAction("Login", "DevicesRequest");
+                 else return RedirectToAction("Login", "DevicesRequest");
             }
             else return RedirectToAction("Login", "DevicesRequest");
 

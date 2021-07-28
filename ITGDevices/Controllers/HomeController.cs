@@ -30,7 +30,7 @@ namespace WebApplication1.Controllers
         {
             if (string.Compare(HttpContext.Session.GetString("role"), "OperationsManager", true) == 0)
             {
-                return RedirectToAction("Teacher", "users");
+                return RedirectToAction("Index", "OperationsManager");
 
             }
             else return RedirectToAction("Login", "users");
