@@ -19,6 +19,7 @@ namespace ITGDevices.Models
         public int CId { get; set; }//
         public int UserId { get; set; }//
         public User requester { get; set; }//
+        public UserItemRequest UserItemRequest { get; set; }
 
 
         public List<Item> Items { get; set; }

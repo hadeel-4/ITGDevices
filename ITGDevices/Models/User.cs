@@ -31,5 +31,6 @@ namespace ITGDevices.Models
         public UserRole userRole { get; set; }
 
         public ICollection<UserItem> UserItem { get; set; }
+        public ICollection<UserItemRequest> UserItemRequest { get; set; }
     }
 }

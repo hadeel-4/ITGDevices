@@ -1,4 +1,5 @@
-﻿using Microsoft.OData.Edm;
+﻿using Microsoft.IdentityModel.Tokens;
+using Microsoft.OData.Edm;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -39,5 +40,7 @@ namespace ITGDevices.Models
 
         public CategoryItem CategoryItem { get; set; }
         public UserItem UserItem { get; set; }
+        public ICollection<UserItemRequest> UserItemRequest { get; set; }
+
     }
 }

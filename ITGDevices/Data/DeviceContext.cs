@@ -14,6 +14,7 @@ namespace ITGDevices.Data
         }
 
         public DbSet<User> users { get; set; }
+        public DbSet<UserItemRequest> UserItemRequest { get; set; }
         public DbSet<Role> roles { get; set; }
         public DbSet<UserRole> userRoles { get; set; }
         public DbSet<Category> Category { get; set; }
@@ -28,6 +29,7 @@ namespace ITGDevices.Data
         {
 
             modelBuilder.Entity<User>().ToTable("user");
+            modelBuilder.Entity<UserItemRequest>().ToTable("UserItemRequest");
             modelBuilder.Entity<Role>().ToTable("role");
             modelBuilder.Entity<UserRole>().ToTable("userRole");
             modelBuilder.Entity<Category>().ToTable("Category");

@@ -101,22 +101,37 @@ namespace ITGDevices.Controllers
                 //recipient
                 mail.To.Add(new MailAddress(holder.Email));
 
-                mail.IsBodyHtml = true;
+               
                 smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
 
                 StreamReader reader = new StreamReader($"{Directory.GetCurrentDirectory()}/wwwroot/files/Body.cshtml");
-                string readFile = reader.ReadToEnd();
+              string readFile = reader.ReadToEnd();
 
-                
-                 mail.Body = readFile;
+
+                // mail.Body = readFile;
+                UserItemRequest userItemRequest = new UserItemRequest { ItemID = item.ID, UserID = (int)HttpContext.Session.GetInt32("id") };
+                 _context.UserItemRequest.Add(userItemRequest);
+                await _context.SaveChangesAsync();
+
+                var itemuser = await _context.UserItemRequest
+                   .FirstOrDefaultAsync(m => m.ItemID ==item.ID && m.UserID== (int)HttpContext.Session.GetInt32("id"));//
+                if (itemuser == null)
+                {
+                    return NotFound();
+                }
+                mail.Body = "Device Requested" +"<br/>"+
+                 "<a href ="+ "https://localhost:44367/DevicesRequest/AcceptOrReject?id="+itemuser.ID+ ">" +
+                      "Approve/Reject"+"</a> ";
+
+                        
+                mail.IsBodyHtml = true;
                 mail.Subject = "Devices";
 
                 try
                 {
                     smtp.Send(mail);
-                    HttpContext.Session.SetInt32("itemId", item.ID);
-                    HttpContext.Session.SetInt32("userId", (int)HttpContext.Session.GetInt32("id"));
-                    HttpContext.Session.SetInt32("holderId", holder.ID);
+                    
+                   // HttpContext.Session.SetInt32("holderId", holder.ID);
 
                     System.Diagnostics.Debug.WriteLine("done");
                 }
@@ -134,6 +149,107 @@ namespace ITGDevices.Controllers
             }
             else return RedirectToAction("Login", "users");
         }
+
+
+
+
+
+
+
+
+        public async Task<IActionResult> Accept(ItemOperation obj)
+        {
+            if ((string.Compare(HttpContext.Session.GetString("role"), "Employee", true) == 0)|| (string.Compare(HttpContext.Session.GetString("role"), "OperationsManager", true) == 0))
+            {
+                if (obj == null)
+                {
+                    return NotFound();
+                }
+                var item = await _context.Items
+                   .FirstOrDefaultAsync(m => m.ID == obj.item.ID);//
+                if (item == null)
+                {
+                    return NotFound();
+                }
+                if (!item.IsDeliver)
+                {
+                    
+                   
+                }
+
+
+
+                UserItem h = _context.UserItem.Single(i => i.ItemID == item.ID);
+                User holder = _context.users.Single(i => i.ID == h.UserID);
+
+
+
+                MailMessage mail = new MailMessage();
+                mail.From = new System.Net.Mail.MailAddress("ha412233@gmail.com");
+                SmtpClient smtp = new SmtpClient();
+                smtp.Port = 587;
+                smtp.EnableSsl = true;
+                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                smtp.UseDefaultCredentials = false;
+                smtp.Credentials = new NetworkCredential(mail.From.Address, "hadeel 123456789");
+
+                smtp.Host = "smtp.gmail.com";
+
+                //recipient
+                mail.To.Add(new MailAddress(holder.Email));
+
+
+                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+
+                StreamReader reader = new StreamReader($"{Directory.GetCurrentDirectory()}/wwwroot/files/Body.cshtml");
+                string readFile = reader.ReadToEnd();
+
+
+                // mail.Body = readFile;
+                UserItemRequest userItemRequest = new UserItemRequest { ItemID = item.ID, UserID = (int)HttpContext.Session.GetInt32("id") };
+                _context.UserItemRequest.Add(userItemRequest);
+                await _context.SaveChangesAsync();
+
+                var itemuser = await _context.UserItemRequest
+                   .FirstOrDefaultAsync(m => m.ID==userItemRequest.ID);//
+                if (itemuser == null)
+                {
+                    return NotFound();
+                }
+                mail.Body = "Device Requested" + "<br/>" +
+                    "<a href ="+"https://localhost:44367/DevicesRequest/AcceptOrReject?id="+">" +
+                      "Approve/Reject" + "</a> ";
+
+
+                mail.IsBodyHtml = true;
+                mail.Subject = "Devices";
+
+                try
+                {
+                    smtp.Send(mail);
+
+                    // HttpContext.Session.SetInt32("holderId", holder.ID);
+
+                    System.Diagnostics.Debug.WriteLine("done");
+                }
+                catch (SmtpException ex)
+                {
+
+                    Console.WriteLine(ex.StackTrace);
+                }
+
+
+
+
+
+                return RedirectToAction("Index", "DevicesRequest");
+            }
+            else return RedirectToAction("Login", "users");
+        }
+
+
+
+
 
 
 
@@ -158,10 +274,8 @@ namespace ITGDevices.Controllers
                     if (User1 != null)
                     {
                         var role = _context.userRoles.Single(e => e.userID == User1.ID);
-                        // var t = _context.userRoles.Single(e => e.roleID == r.roleID);
                         var RoleInfo = _context.roles.Single(e => e.ID == role.roleID);
                         HttpContext.Session.SetString("role", RoleInfo.rolename);
-                        HttpContext.Session.SetString("role2", "in");
                         HttpContext.Session.SetInt32("idd", User1.ID);
 
 
@@ -181,36 +295,54 @@ namespace ITGDevices.Controllers
         }
 
 
-        public async Task<IActionResult> AcceptOrReject()
+        public async Task<IActionResult> AcceptOrReject(int ? id)
         {
             
             if ((string.Compare(HttpContext.Session.GetString("role"), "Employee", true) == 0) || (string.Compare(HttpContext.Session.GetString("role"), "OperationsManager", true) == 0))
             {
-              int ? itemID= (int)HttpContext.Session.GetInt32("itemId");
-                int ? userID = (int)HttpContext.Session.GetInt32("userId");
-                if (itemID == null)
+                if (id == null)
                 {
                     return NotFound();
                 }
-                if (userID == null)
+
+                var UserItemRequest = await _context.UserItemRequest.FindAsync(id);
+                if (UserItemRequest == null)
                 {
                     return NotFound();
                 }
-                var item = await _context.Items
-                   .FirstOrDefaultAsync(m => m.ID == itemID);//
+                var userItem = await _context.UserItem.FindAsync(UserItemRequest.ItemID);
+                if (userItem == null)
+                {
+                    return NotFound();
+                }
+                var Realholder = await _context.users.FindAsync(userItem.UserID);
+                if (Realholder == null)
+                {
+                    return NotFound();
+                }
+                var item = await _context.Items.FindAsync(UserItemRequest.ItemID);
                 if (item == null)
                 {
                     return NotFound();
                 }
-                if ((int)HttpContext.Session.GetInt32("idd")== (int)HttpContext.Session.GetInt32("holderId"))
+                var Requester = await _context.users.FindAsync(UserItemRequest.UserID);
+                if (Requester == null)
                 {
-                    User user = _context.users.Single(i => i.ID == userID);
+                    return NotFound();
+                }
 
+
+
+
+
+                if ((int)HttpContext.Session.GetInt32("idd")== Realholder.ID)
+                {
                     ItemOperation itemOperation = new ItemOperation();
-                    itemOperation.ItemID = (int)itemID;
                     itemOperation.item = item;
-                    itemOperation.UserId = (int)userID;
-                    itemOperation.requester = user;
+                    itemOperation.holder = Realholder;
+                    itemOperation.requester = Requester;
+                    itemOperation.UserItemRequest = UserItemRequest;
+                   
                     return View(itemOperation);
                 }
                  else return RedirectToAction("Login", "DevicesRequest");

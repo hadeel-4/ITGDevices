@@ -9,15 +9,16 @@
     Layout = "_LayoutAccept"; }
 
 
-@using Microsoft.AspNetCore.Http;
-@inject IHttpContextAccessor HttpContextAccessor
-@if (HttpContextAccessor.HttpContext.Session.GetString("role2") == "out")
-{
- }
-else
-{
 
-<form class="f" method="post" >
+
+<form class="f" method="post">
+    <input type="hidden" asp-for="item.ID" />
+    <input type="hidden" asp-for="requester.ID" />
+    <input type="hidden" asp-for="holder.ID" />
+    <input type="hidden" asp-for="UserItemRequest.ID" />
+
+
+
     <div class="border p-3">
 
         <div class="form-group row">
@@ -31,10 +32,10 @@ else
                     <div class="col-8 offset-4 row">
 
                         <div class="col">
-                            <input type="submit" class="btn btn-info w-100" value="Approve" />
+                            <input type="submit" asp-controller="DevicesRequest" asp-action="Accept" class="btn btn-info w-100" value="Approve" />
                         </div>
                         <div class="col">
-                            <input type="submit" class="btn btn-info w-100" value="Reject" />
+                            <input type="submit" asp-controller="DevicesRequest" asp-action="Reject" class="btn btn-info w-100" value="Reject" />
                         </div>
 
                     </div>
@@ -74,7 +75,7 @@ else
 
 
 
-                }}
+                }
 
 
 
