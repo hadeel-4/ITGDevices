@@ -20,6 +20,9 @@ namespace ITGDevices.Models
         public int UserId { get; set; }//
         public User requester { get; set; }//
         public UserItemRequest UserItemRequest { get; set; }
+        public System.Guid UserItemRequestId { get; set; }//
+        public User user { get; set; }//
+
 
 
         public List<Item> Items { get; set; }

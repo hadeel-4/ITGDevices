@@ -217,8 +217,8 @@ namespace ITGDevices.Controllers
                     return NotFound();
                 }
                 mail.Body = "Device Requested" + "<br/>" +
-                    "<a href ="+"https://localhost:44367/DevicesRequest/AcceptOrReject?id="+">" +
-                      "Approve/Reject" + "</a> ";
+                    "<a href='https://localhost:44367/DevicesRequest/AcceptOrReject?id=" + itemuser.ID.ToString() + " '>Approve/Reject</a>";
+               
 
 
                 mail.IsBodyHtml = true;
@@ -295,24 +295,27 @@ namespace ITGDevices.Controllers
         }
 
 
-        public async Task<IActionResult> AcceptOrReject(int ? id)
+        public async Task<IActionResult> AcceptOrReject(System.Guid id)
         {
             
             if ((string.Compare(HttpContext.Session.GetString("role"), "Employee", true) == 0) || (string.Compare(HttpContext.Session.GetString("role"), "OperationsManager", true) == 0))
             {
-                if (id == null)
-                {
-                    return NotFound();
-                }
+                
 
                 var UserItemRequest = await _context.UserItemRequest.FindAsync(id);
                 if (UserItemRequest == null)
                 {
+                    ModelState.AddModelError("", "UserItemRequest is null");
+
+
+
                     return NotFound();
                 }
                 var userItem = await _context.UserItem.FindAsync(UserItemRequest.ItemID);
                 if (userItem == null)
                 {
+                    ModelState.AddModelError("", "userItem is null");
+
                     return NotFound();
                 }
                 var Realholder = await _context.users.FindAsync(userItem.UserID);
@@ -342,12 +345,14 @@ namespace ITGDevices.Controllers
                     itemOperation.holder = Realholder;
                     itemOperation.requester = Requester;
                     itemOperation.UserItemRequest = UserItemRequest;
-                   
+                    System.Diagnostics.Debug.WriteLine("done");
+
+
                     return View(itemOperation);
                 }
-                 else return RedirectToAction("Login", "DevicesRequest");
+                 else return RedirectToAction("Login", "DevicesRequest",id);
             }
-            else return RedirectToAction("Login", "DevicesRequest");
+            else return RedirectToAction("Login", "DevicesRequest",id);
 
         }
 
