@@ -252,17 +252,21 @@ namespace ITGDevices.Controllers
 
 
 
-
-        public IActionResult Login()
+        [HttpGet]
+        public IActionResult Login(System.Guid id)
         {
-            return View(new Models.User());
+            ItemOperation operation = new ItemOperation();
+            operation.UserItemRequestId = id;
+            System.Diagnostics.Debug.WriteLine("login"+id);
+
+            return View(operation);
         }
 
 
 
-        [HttpPost]
+        [HttpPost, ActionName("Login")]
         [ValidateAntiForgeryToken]
-        public IActionResult Login(Login user)
+        public IActionResult LoginCheck(ItemOperation op)
         {
             try
             {
@@ -270,7 +274,7 @@ namespace ITGDevices.Controllers
                 {
 
 
-                    var User1 = _context.users.Single(e => e.username == user.username && e.Password == user.Password);
+                    var User1 = _context.users.Single(e => e.username == op.user.username && e.Password == op.user.Password);
                     if (User1 != null)
                     {
                         var role = _context.userRoles.Single(e => e.userID == User1.ID);
@@ -279,7 +283,7 @@ namespace ITGDevices.Controllers
                         HttpContext.Session.SetInt32("idd", User1.ID);
 
 
-                        return RedirectToAction("AcceptOrReject", "DevicesRequest");
+                        return RedirectToAction("AcceptOrReject", "DevicesRequest", new { id = op.UserItemRequestId });
                         //return View("Index");
 
                     }
@@ -297,10 +301,12 @@ namespace ITGDevices.Controllers
 
         public async Task<IActionResult> AcceptOrReject(System.Guid id)
         {
-            
+
+
+
             if ((string.Compare(HttpContext.Session.GetString("role"), "Employee", true) == 0) || (string.Compare(HttpContext.Session.GetString("role"), "OperationsManager", true) == 0))
             {
-                
+
 
                 var UserItemRequest = await _context.UserItemRequest.FindAsync(id);
                 if (UserItemRequest == null)
@@ -338,7 +344,7 @@ namespace ITGDevices.Controllers
 
 
 
-                if ((int)HttpContext.Session.GetInt32("idd")== Realholder.ID)
+                if ((int)HttpContext.Session.GetInt32("idd") == Realholder.ID)
                 {
                     ItemOperation itemOperation = new ItemOperation();
                     itemOperation.item = item;
@@ -350,9 +356,22 @@ namespace ITGDevices.Controllers
 
                     return View(itemOperation);
                 }
-                 else return RedirectToAction("Login", "DevicesRequest",id);
+                else {
+                    ItemOperation operation = new ItemOperation();
+                    operation.UserItemRequestId = id;
+                    System.Diagnostics.Debug.WriteLine("decide" + operation.UserItemRequestId);
+
+
+                    return RedirectToAction("Login", "DevicesRequest", new { id=id }); 
+                }
             }
-            else return RedirectToAction("Login", "DevicesRequest",id);
+            else {
+                ItemOperation operation = new ItemOperation();
+                operation.UserItemRequestId = id;
+                System.Diagnostics.Debug.WriteLine("sent" + operation.UserItemRequestId);
+
+                return RedirectToAction("Login", "DevicesRequest", new { id=id }); 
+            }
 
         }
 

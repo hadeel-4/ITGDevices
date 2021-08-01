@@ -21,7 +21,7 @@ namespace ITGDevices.Models
         public User requester { get; set; }//
         public UserItemRequest UserItemRequest { get; set; }
         public System.Guid UserItemRequestId { get; set; }//
-        public User user { get; set; }//
+        public Login user { get; set; }//
 
 
 
