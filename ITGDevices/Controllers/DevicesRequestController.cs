@@ -159,6 +159,8 @@ namespace ITGDevices.Controllers
 
         public async Task<IActionResult> Accept(ItemOperation obj)
         {
+            System.Diagnostics.Debug.WriteLine("Accept" + obj.UserItemRequest.ID);
+
             if ((string.Compare(HttpContext.Session.GetString("role"), "Employee", true) == 0)|| (string.Compare(HttpContext.Session.GetString("role"), "OperationsManager", true) == 0))
             {
                 if (obj == null)
@@ -171,83 +173,90 @@ namespace ITGDevices.Controllers
                 {
                     return NotFound();
                 }
+                //insure current holder
+                if ((int)HttpContext.Session.GetInt32("idd") != obj.holder.ID)
+                {
+                    //System.Threading.Thread.Sleep(15000);
+                    System.Diagnostics.Debug.WriteLine("Accept the holder is diff");
+
+                    ModelState.AddModelError("", "You don't have this device any more");
+                    return RedirectToAction("Login", "DevicesRequest", new { id = obj.UserItemRequest.ID });
+
+
+                }
                 if (!item.IsDeliver)
                 {
-                    
-                   
+                    item.IsDeliver = true;
+                    item.IsActive = true;
+                    _context.Update(item);
+                    await _context.SaveChangesAsync();
+                    UserItem h = _context.UserItem.Single(i => i.ItemID == item.ID);
+
+                    h.UserID = obj.requester.ID;
+                    User newHolder = _context.users.Single(i => i.ID == obj.requester.ID);
+
+                    MailMessage mail = new MailMessage();
+                    mail.From = new System.Net.Mail.MailAddress("ha412233@gmail.com");
+                    SmtpClient smtp = new SmtpClient();
+                    smtp.Port = 587;
+                    smtp.EnableSsl = true;
+                    smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                    smtp.UseDefaultCredentials = false;
+                    smtp.Credentials = new NetworkCredential(mail.From.Address, "hadeel 123456789");
+
+                    smtp.Host = "smtp.gmail.com";
+                    mail.To.Add(new MailAddress(newHolder.Email));
+
+
+                    smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+
+
+
+                    _context.Update(h);
+                    await _context.SaveChangesAsync();
+
+                    mail.Body = item.Name + " Device is given for you" + "<br/>";
+
+
+
+                    mail.IsBodyHtml = true;
+                    mail.Subject = "Devices";
+
+                    try
+                    {
+                        smtp.Send(mail);
+                        item.IsDeliver = false;
+                        _context.Update(item);
+                        await _context.SaveChangesAsync();
+
+                        // HttpContext.Session.SetInt32("holderId", holder.ID);
+
+                        System.Diagnostics.Debug.WriteLine("done send");
+                        return RedirectToAction("AcceptDone", "DevicesRequest");
+                    }
+                    catch (SmtpException ex)
+                    {
+
+                        Console.WriteLine(ex.StackTrace);
+                    }
+
+
+
+
                 }
-
-
-
-                UserItem h = _context.UserItem.Single(i => i.ItemID == item.ID);
-                User holder = _context.users.Single(i => i.ID == h.UserID);
-
-
-
-                MailMessage mail = new MailMessage();
-                mail.From = new System.Net.Mail.MailAddress("ha412233@gmail.com");
-                SmtpClient smtp = new SmtpClient();
-                smtp.Port = 587;
-                smtp.EnableSsl = true;
-                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-                smtp.UseDefaultCredentials = false;
-                smtp.Credentials = new NetworkCredential(mail.From.Address, "hadeel 123456789");
-
-                smtp.Host = "smtp.gmail.com";
-
-                //recipient
-                mail.To.Add(new MailAddress(holder.Email));
-
-
-                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-
-                StreamReader reader = new StreamReader($"{Directory.GetCurrentDirectory()}/wwwroot/files/Body.cshtml");
-                string readFile = reader.ReadToEnd();
-
-
-                // mail.Body = readFile;
-                UserItemRequest userItemRequest = new UserItemRequest { ItemID = item.ID, UserID = (int)HttpContext.Session.GetInt32("id") };
-                _context.UserItemRequest.Add(userItemRequest);
-                await _context.SaveChangesAsync();
-
-                var itemuser = await _context.UserItemRequest
-                   .FirstOrDefaultAsync(m => m.ID==userItemRequest.ID);//
-                if (itemuser == null)
-                {
-                    return NotFound();
-                }
-                mail.Body = "Device Requested" + "<br/>" +
-                    "<a href='https://localhost:44367/DevicesRequest/AcceptOrReject?id=" + itemuser.ID.ToString() + " '>Approve/Reject</a>";
-               
-
-
-                mail.IsBodyHtml = true;
-                mail.Subject = "Devices";
-
-                try
-                {
-                    smtp.Send(mail);
-
-                    // HttpContext.Session.SetInt32("holderId", holder.ID);
-
-                    System.Diagnostics.Debug.WriteLine("done");
-                }
-                catch (SmtpException ex)
-                {
-
-                    Console.WriteLine(ex.StackTrace);
-                }
-
-
-
-
-
-                return RedirectToAction("Index", "DevicesRequest");
+                else return RedirectToAction("Login", "DevicesRequest", new { id = obj.UserItemRequest.ID });
             }
-            else return RedirectToAction("Login", "users");
+            else return RedirectToAction("Login", "DevicesRequest", new { id = obj.UserItemRequest.ID });
+
+
+
+            return RedirectToAction("Login", "DevicesRequest", new { id = obj.UserItemRequest.ID });
         }
 
-
+        public IActionResult AcceptDone()
+        {
+           return View();
+        }
 
 
 
@@ -301,6 +310,7 @@ namespace ITGDevices.Controllers
 
         public async Task<IActionResult> AcceptOrReject(System.Guid id)
         {
+            System.Diagnostics.Debug.WriteLine("AcceptOrReject" + id);
 
 
 
@@ -357,18 +367,13 @@ namespace ITGDevices.Controllers
                     return View(itemOperation);
                 }
                 else {
-                    ItemOperation operation = new ItemOperation();
-                    operation.UserItemRequestId = id;
-                    System.Diagnostics.Debug.WriteLine("decide" + operation.UserItemRequestId);
-
+                    
 
                     return RedirectToAction("Login", "DevicesRequest", new { id=id }); 
                 }
             }
             else {
-                ItemOperation operation = new ItemOperation();
-                operation.UserItemRequestId = id;
-                System.Diagnostics.Debug.WriteLine("sent" + operation.UserItemRequestId);
+               
 
                 return RedirectToAction("Login", "DevicesRequest", new { id=id }); 
             }
