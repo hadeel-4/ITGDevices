@@ -1,0 +1,141 @@
+﻿@model IEnumerable<ITGDevices.Models.Item>
+@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{ ViewData["Title"] = "Index";
+    Layout = "_LayoutEmployee"; }
+
+
+<style>
+    .f {
+        margin-top: 90px;
+    }
+
+    #myInput {
+        background-position: 10px 10px;
+        background-repeat: no-repeat;
+        width: 100%;
+        font-size: 16px;
+        padding: 12px 20px 12px 40px;
+        border: 1px solid #ddd;
+        margin-bottom: 12px;
+    }
+</style>
+<div class="container p-3 f">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-primary">Items List</h2>
+
+        </div>
+
+    </div>
+
+    <br /><br />
+
+
+
+
+    @if (HttpContextAccessor.HttpContext.Session.GetString("role2") == "out")
+    {
+<h1>Hi, @HttpContextAccessor.HttpContext.Session.GetString("firstname")</h1> }
+else
+{
+@if (Model.Count() > 0)
+{
+<input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name">
+                    <table id="myTable" class="table table-bordered table-striped" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.SerialNumber)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Name)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Manufacturer)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Model)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Description)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.PurchaseDate)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.IsActive)
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+        <tr>
+            <td width="15%">
+                @Html.DisplayFor(modelItem => item.SerialNumber)
+            </td>
+            <td width="10%">
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td width="15%">
+                @Html.DisplayFor(modelItem => item.Manufacturer)
+            </td>
+            <td width="15%">
+                @Html.DisplayFor(modelItem => item.Model)
+            </td>
+            <td width="10%">
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td width="10%">
+                @Html.DisplayFor(modelItem => item.PurchaseDate)
+            </td>
+            <td width="5%">
+                @Html.DisplayFor(modelItem => item.IsActive)
+            </td>
+            <td class="text-center">
+                <div class="w-75 btn-group" role="group">
+
+                    <a asp-route-Id="@item.ID" asp-action="UserDevicesConfirmed" asp-controller="DevicesRequest" class="btn btn-primary mx-2">
+                        Return To Manager
+                    </a>
+
+
+                </div>
+
+            </td>
+        </tr>
+}
+
+
+                        </tbody>
+                    </table>
+
+                                        <script>function myFunction() {
+                            var input, filter, table, tr, td, i, txtValue;
+                            input = document.getElementById("myInput");
+                            filter = input.value.toUpperCase();
+                            table = document.getElementById("myTable");
+                            tr = table.getElementsByTagName("tr");
+                            for (i = 0; i < tr.length; i++) {
+                                td = tr[i].getElementsByTagName("td")[1];
+                                if (td) {
+                                    txtValue = td.textContent || td.innerText;
+                                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                        tr[i].style.display = "";
+                                    } else {
+                                        tr[i].style.display = "none";
+                                    }
+                                }
+                            }
+                        }</script>
+
+ }
+                                                        else
+                                                        {
+                                        <p>No Item exists.</p>}}
+
+</div>
+

@@ -468,5 +468,75 @@ namespace ITGDevices.Controllers
 
         }
 
+
+
+
+        public IActionResult UserDevices()
+        {
+            if (string.Compare(HttpContext.Session.GetString("role"), "Employee", true) == 0)
+            {
+                var userItems = _context.UserItem.Where(i => i.UserID == (int)HttpContext.Session.GetInt32("id"));
+                List<Item> items = new List<Item>();
+                foreach (UserItem userItem in userItems)
+                {
+                    Item item = _context.Items.Single(i => i.ID == userItem.ItemID);
+                    items.Add(item);
+
+                }
+
+                return View(items);
+            }
+            else return RedirectToAction("Login", "users");
+        }
+
+
+        public async Task<IActionResult> UserDevicesConfirmed(int? id)
+        {
+            System.Diagnostics.Debug.WriteLine("UserDevices" + id);
+
+            if ((string.Compare(HttpContext.Session.GetString("role"), "Employee", true) == 0))
+            {
+                if (id == null)
+                {
+                    return NotFound();
+                }
+                var item = await _context.Items
+                   .FirstOrDefaultAsync(m => m.ID == id);//
+                if (item == null)
+                {
+                    return NotFound();
+                }
+
+                var useritem =  _context.UserItem
+                    .Single(m => m.ItemID == id);//
+                if (useritem == null)
+                {
+                    return NotFound();
+                }
+
+                var listOfManagersId = _context.userRoles.Where(r => r.roleID == 2).ToList();
+
+               
+                List<User> managers = new List<User>();
+                foreach (UserRole r in listOfManagersId)
+                {
+                    var u = _context.users.Single(e => e.ID == r.userID);
+                    managers.Add(u);
+
+                }
+                useritem.UserID = managers[0].ID;
+                item.IsActive = false;
+                item.IsDeliver = false;
+                _context.Items.Update(item);
+                await _context.SaveChangesAsync();
+                _context.UserItem.Update(useritem);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Index", "DevicesRequest");
+            }
+            else return RedirectToAction("Login", "users");
+        }
+
+
     }
 }
