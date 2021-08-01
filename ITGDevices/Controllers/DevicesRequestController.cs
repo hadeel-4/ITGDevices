@@ -159,7 +159,7 @@ namespace ITGDevices.Controllers
 
         public async Task<IActionResult> Accept(ItemOperation obj)
         {
-            System.Diagnostics.Debug.WriteLine("Accept" + obj.UserItemRequest.ID);
+            //System.Diagnostics.Debug.WriteLine("Accept" + obj.UserItemRequest.ID);
 
             if ((string.Compare(HttpContext.Session.GetString("role"), "Employee", true) == 0)|| (string.Compare(HttpContext.Session.GetString("role"), "OperationsManager", true) == 0))
             {
@@ -256,6 +256,94 @@ namespace ITGDevices.Controllers
         public IActionResult AcceptDone()
         {
            return View();
+        }
+        public IActionResult RejectDone()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> Reject(ItemOperation obj)
+        {
+            if ((string.Compare(HttpContext.Session.GetString("role"), "Employee", true) == 0) || (string.Compare(HttpContext.Session.GetString("role"), "OperationsManager", true) == 0))
+            {
+                if (obj == null)
+                {
+                    return NotFound();
+                }
+                var item = await _context.Items
+                   .FirstOrDefaultAsync(m => m.ID == obj.item.ID);//
+                if (item == null)
+                {
+                    return NotFound();
+                }
+                //insure current holder
+                if ((int)HttpContext.Session.GetInt32("idd") != obj.holder.ID)
+                {
+                    //System.Threading.Thread.Sleep(15000);
+                    System.Diagnostics.Debug.WriteLine("Accept the holder is diff");
+
+                    ModelState.AddModelError("", "You don't have this device any more");
+                    return RedirectToAction("Login", "DevicesRequest", new { id = obj.UserItemRequest.ID });
+
+
+                }
+                
+                   
+
+                UserItem h = _context.UserItem.Single(i => i.ItemID == item.ID);
+                User holder = _context.users.Single(i => i.ID == h.UserID);
+
+                User requester = _context.users.Single(i => i.ID == obj.requester.ID);
+
+
+
+                MailMessage mail = new MailMessage();
+                    mail.From = new System.Net.Mail.MailAddress("ha412233@gmail.com");
+                    SmtpClient smtp = new SmtpClient();
+                    smtp.Port = 587;
+                    smtp.EnableSsl = true;
+                    smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                    smtp.UseDefaultCredentials = false;
+                    smtp.Credentials = new NetworkCredential(mail.From.Address, "hadeel 123456789");
+
+                    smtp.Host = "smtp.gmail.com";
+                    mail.To.Add(new MailAddress(requester.Email));
+
+
+                    smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+
+
+
+                    _context.Update(h);
+                    await _context.SaveChangesAsync();
+
+                    mail.Body = holder.username+ " reject give "+ item.Name+" for you" + "<br/>";
+
+
+
+                    mail.IsBodyHtml = true;
+                    mail.Subject = "Devices";
+
+                    try
+                    {
+                        smtp.Send(mail);
+                       System.Diagnostics.Debug.WriteLine("done send");
+                        return RedirectToAction("RejectDone", "DevicesRequest");
+                    }
+                    catch (SmtpException ex)
+                    {
+
+                        Console.WriteLine(ex.StackTrace);
+                    }
+
+
+
+
+                
+            }
+            else return RedirectToAction("Login", "DevicesRequest", new { id = obj.UserItemRequest.ID });
+
+            return RedirectToAction("Login", "DevicesRequest", new { id = obj.UserItemRequest.ID });
         }
 
 
