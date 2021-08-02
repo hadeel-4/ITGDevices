@@ -141,10 +141,6 @@ namespace ITGDevices.Controllers
                     Console.WriteLine(ex.StackTrace);
                 }
                
-                
-                
-
-
                 return RedirectToAction("Index", "DevicesRequest");
             }
             else return RedirectToAction("Login", "users");
@@ -159,7 +155,6 @@ namespace ITGDevices.Controllers
 
         public async Task<IActionResult> Accept(ItemOperation obj)
         {
-            //System.Diagnostics.Debug.WriteLine("Accept" + obj.UserItemRequest.ID);
 
             if ((string.Compare(HttpContext.Session.GetString("role"), "Employee", true) == 0)|| (string.Compare(HttpContext.Session.GetString("role"), "OperationsManager", true) == 0))
             {
@@ -176,7 +171,6 @@ namespace ITGDevices.Controllers
                 //insure current holder
                 if ((int)HttpContext.Session.GetInt32("idd") != obj.holder.ID)
                 {
-                    //System.Threading.Thread.Sleep(15000);
                     System.Diagnostics.Debug.WriteLine("Accept the holder is diff");
 
                     ModelState.AddModelError("", "You don't have this device any more");
@@ -206,13 +200,8 @@ namespace ITGDevices.Controllers
 
                     smtp.Host = "smtp.gmail.com";
                     mail.To.Add(new MailAddress(newHolder.Email));
-
-
                     smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-
-
-
-                    _context.Update(h);
+                     _context.Update(h);
                     await _context.SaveChangesAsync();
 
                     mail.Body = item.Name + " Device is given for you" + "<br/>";
@@ -239,8 +228,6 @@ namespace ITGDevices.Controllers
 
                         Console.WriteLine(ex.StackTrace);
                     }
-
-
 
 
                 }
@@ -279,7 +266,6 @@ namespace ITGDevices.Controllers
                 //insure current holder
                 if ((int)HttpContext.Session.GetInt32("idd") != obj.holder.ID)
                 {
-                    //System.Threading.Thread.Sleep(15000);
                     System.Diagnostics.Debug.WriteLine("Accept the holder is diff");
 
                     ModelState.AddModelError("", "You don't have this device any more");
@@ -398,9 +384,6 @@ namespace ITGDevices.Controllers
 
         public async Task<IActionResult> AcceptOrReject(System.Guid id)
         {
-            System.Diagnostics.Debug.WriteLine("AcceptOrReject" + id);
-
-
 
             if ((string.Compare(HttpContext.Session.GetString("role"), "Employee", true) == 0) || (string.Compare(HttpContext.Session.GetString("role"), "OperationsManager", true) == 0))
             {
@@ -437,10 +420,6 @@ namespace ITGDevices.Controllers
                 {
                     return NotFound();
                 }
-
-
-
-
 
                 if ((int)HttpContext.Session.GetInt32("idd") == Realholder.ID)
                 {
@@ -492,7 +471,6 @@ namespace ITGDevices.Controllers
 
         public async Task<IActionResult> UserDevicesConfirmed(int? id)
         {
-            System.Diagnostics.Debug.WriteLine("UserDevices" + id);
 
             if ((string.Compare(HttpContext.Session.GetString("role"), "Employee", true) == 0))
             {
