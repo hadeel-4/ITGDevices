@@ -79,9 +79,7 @@ namespace ITGDevices.Controllers
                 {
                     return NotFound();
                 }
-
-
-                
+               
                 UserItem h = _context.UserItem.Single(i => i.ItemID == item.ID);
                  User holder = _context.users.Single(i => i.ID == h.UserID);
 
@@ -104,43 +102,42 @@ namespace ITGDevices.Controllers
                
                 smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
 
-                StreamReader reader = new StreamReader($"{Directory.GetCurrentDirectory()}/wwwroot/files/Body.cshtml");
-              string readFile = reader.ReadToEnd();
-
-
-                // mail.Body = readFile;
                 UserItemRequest userItemRequest = new UserItemRequest { ItemID = item.ID, UserID = (int)HttpContext.Session.GetInt32("id") };
-                 _context.UserItemRequest.Add(userItemRequest);
-                await _context.SaveChangesAsync();
-
                 var itemuser = await _context.UserItemRequest
-                   .FirstOrDefaultAsync(m => m.ItemID ==item.ID && m.UserID== (int)HttpContext.Session.GetInt32("id"));//
-                if (itemuser == null)
+                  .FirstOrDefaultAsync(m => m.ItemID == item.ID && m.UserID == (int)HttpContext.Session.GetInt32("id"));//
+                if (itemuser != null)
                 {
-                    return NotFound();
+                    ModelState.AddModelError("", "you request this device before");
+
                 }
-                mail.Body = "Device Requested" +"<br/>"+
-                 "<a href ="+ "https://localhost:44367/DevicesRequest/AcceptOrReject?id="+itemuser.ID+ ">" +
-                      "Approve/Reject"+"</a> ";
-
-                        
-                mail.IsBodyHtml = true;
-                mail.Subject = "Devices";
-
-                try
+                else
                 {
-                    smtp.Send(mail);
-                    
-                   // HttpContext.Session.SetInt32("holderId", holder.ID);
+                    _context.UserItemRequest.Add(userItemRequest);
+                    await _context.SaveChangesAsync();
+                    var itemuserReq = await _context.UserItemRequest
+                  .FirstOrDefaultAsync(m => m.ItemID == item.ID && m.UserID == (int)HttpContext.Session.GetInt32("id"));//
 
-                    System.Diagnostics.Debug.WriteLine("done");
-                }
-                catch (SmtpException ex)
-                {
+                    mail.Body = "Device Requested" + "<br/>" +
+                     "<a href =" + "https://localhost:44367/DevicesRequest/AcceptOrReject?id=" + itemuserReq.ID + ">" +
+                          "Approve/Reject" + "</a> ";
 
-                    Console.WriteLine(ex.StackTrace);
+
+                    mail.IsBodyHtml = true;
+                    mail.Subject = "Devices";
+
+                    try
+                    {
+                        smtp.Send(mail);
+                        System.Diagnostics.Debug.WriteLine("done");
+                    }
+                    catch (SmtpException ex)
+                    {
+
+                        Console.WriteLine(ex.StackTrace);
+                    }
+
+                    return RedirectToAction("Index", "DevicesRequest");
                 }
-               
                 return RedirectToAction("Index", "DevicesRequest");
             }
             else return RedirectToAction("Login", "users");
@@ -216,6 +213,10 @@ namespace ITGDevices.Controllers
                         smtp.Send(mail);
                         item.IsDeliver = false;
                         _context.Update(item);
+                        await _context.SaveChangesAsync();
+
+                        var request = await _context.UserItemRequest.FindAsync(obj.UserItemRequest.ID);
+                        _context.UserItemRequest.Remove(request);
                         await _context.SaveChangesAsync();
 
                         // HttpContext.Session.SetInt32("holderId", holder.ID);
@@ -298,11 +299,6 @@ namespace ITGDevices.Controllers
 
                     smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
 
-
-
-                    _context.Update(h);
-                    await _context.SaveChangesAsync();
-
                     mail.Body = holder.username+ " reject give "+ item.Name+" for you" + "<br/>";
 
 
@@ -313,7 +309,10 @@ namespace ITGDevices.Controllers
                     try
                     {
                         smtp.Send(mail);
-                       System.Diagnostics.Debug.WriteLine("done send");
+                    var request = await _context.UserItemRequest.FindAsync(obj.UserItemRequest.ID);
+                    _context.UserItemRequest.Remove(request);
+                    await _context.SaveChangesAsync();
+                    System.Diagnostics.Debug.WriteLine("done send");
                         return RedirectToAction("RejectDone", "DevicesRequest");
                     }
                     catch (SmtpException ex)
@@ -511,6 +510,33 @@ namespace ITGDevices.Controllers
                 await _context.SaveChangesAsync();
 
                 return RedirectToAction("Index", "DevicesRequest");
+            }
+            else return RedirectToAction("Login", "users");
+        }
+
+
+        public IActionResult AllRequestedDevices()
+        {
+            if ((string.Compare(HttpContext.Session.GetString("role"), "Employee", true) == 0)|| (string.Compare(HttpContext.Session.GetString("role"), "OperationsManager", true) == 0))
+            {
+                var userItems = _context.UserItem.Where(i => i.UserID == (int)HttpContext.Session.GetInt32("id"));
+                List<Request> requests = new List<Request>();
+                foreach (UserItem userItem in userItems)
+                {
+                    var userItemRequest= _context.UserItemRequest.Where(i => i.ItemID== userItem.ItemID);
+                   foreach(UserItemRequest request in userItemRequest)
+                    {
+                        if (request.UserID == (int)HttpContext.Session.GetInt32("id")) continue;
+                        Request r = new Request();
+                        Item item = _context.Items.Single(i => i.ID == request.ItemID);
+                        r.UserItemRequest = request;
+                        r.item = item;
+                        requests.Add(r);
+                    }
+                  
+                }
+
+                return View(requests);
             }
             else return RedirectToAction("Login", "users");
         }
